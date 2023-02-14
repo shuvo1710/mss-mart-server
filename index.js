@@ -22,6 +22,12 @@ const run =async()=>{
         const womanProductCollection = client.db ('mss-mart').collection('womanCollection')
         const manProductCollection = client.db ('mss-mart').collection('manCollection')
         const kidsProductCollection = client.db('mss-mart').collection('kidCollection')
+        const recommendationProduct = client.db('mss-mart').collection('recommendationCollection')
+
+
+
+
+
         app.get('/allProduct', async(req,res)=>{
             const query = {}
             const allProduct = await allProductCollection.find(query).toArray()
@@ -42,6 +48,11 @@ const run =async()=>{
             const query = {}
             const man = await kidsProductCollection.find(query).toArray()
             res.send(man)
+        })
+        app.get('/recommendation', async(req,res)=>{
+            const query ={}
+            const recommendation= await recommendationProduct.find(query).limit(15).toArray()
+            res.send(recommendation) 
         })
 
     }
