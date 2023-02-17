@@ -26,8 +26,6 @@ const run =async()=>{
 
 
 
-
-
         app.get('/allProduct', async(req,res)=>{
             const query = {}
             const allProduct = await allProductCollection.find(query).toArray()
