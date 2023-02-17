@@ -1,8 +1,9 @@
 const express = require('express')
 const app = express()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 const cors = require('cors'); 
+const { query, query } = require('express');
 require("dotenv").config()
 
 
@@ -44,6 +45,14 @@ const run =async()=>{
             const man = await manProductCollection.find(query).toArray()
             res.send(man)
         })
+        app.get('/man/:id', async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id:ObjectId(id)}
+            const result = await manProductCollection.findOne(query)
+            res.send(result)
+        })
+
+
         app.get('/kids', async(req,res)=>{
             const query = {}
             const man = await kidsProductCollection.find(query).toArray()
@@ -52,7 +61,7 @@ const run =async()=>{
         app.get('/recommendation', async(req,res)=>{
             const query ={}
             const recommendation= await recommendationProduct.find(query).limit(15).toArray()
-            res.send(recommendation) 
+            res.send(recommendation)
         })
 
     }
