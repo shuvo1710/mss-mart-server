@@ -42,6 +42,7 @@ const run = async () => {
             const query = { category: category }
             const allProducts = await allProductCollection.find(query).toArray();
             res.send(allProducts)
+        })
         app.get('/allProduct/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
