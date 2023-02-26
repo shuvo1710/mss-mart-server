@@ -3,6 +3,8 @@ const app = express()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 const cors = require('cors');
+
+
 require("dotenv").config()
 
 
@@ -25,9 +27,12 @@ const run = async () => {
         const bestSealProductsCollection = client.db('mss-mart').collection('bestSealCollection')
 
 
-        app.get('/allProduct', async (req, res) => {
-            const productType = req.query.productType
-            const query = { productType: productType }
+
+
+        app.get('/allProduct', async(req,res)=>{
+            const productType=req.query.productType
+            const query = {productType: productType}
+
             const allProduct = await allProductCollection.find(query).toArray()
             res.send(allProduct)
         })
@@ -37,9 +42,6 @@ const run = async () => {
             const query = { category: category }
             const allProducts = await allProductCollection.find(query).toArray();
             res.send(allProducts)
-        })
-
-
         app.get('/allProduct/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
