@@ -3,6 +3,7 @@ const app = express()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 const cors = require('cors');
+const jwt = require("jsonwebtoken")
 
 
 require("dotenv").config()
@@ -12,31 +13,60 @@ app.use(cors())
 app.use(express.json())
 
 
+
+
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.PASSWORD}@cluster0.1mrcu36.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 // console.log(uri);
+
+// function verifyJWT(req,res,next){
+//     const authHeader = req.headers.authorization;
+//     if(!authHeader){
+//         return res.status(401).send({message: 'access denied'})
+//     }
+//     const token = authHeader.split(' ')[1]
+
+//     jwt.verify(token,process.env.JwtToken,function(error,decoded){
+//         if(error){
+//             return res.status(401).send({message: 'access denied'})
+//         }
+//         req.decoded = decoded;
+//         next();
+//     })
+// }
+
+function verifyJWT(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(403).send({ message: 'forbidden access' })
+    }
+    const token = authHeader.split(' ')[1]
+    jwt.verify(token, process.env.JWT_TOKEN, function (error, decoded) {
+        if (error) {
+            return res.status(403).send({ message: 'forbidden access' })
+        }
+        req.decoded = decoded
+        next();
+    })
+}
+
 
 const run = async () => {
 
     try {
         const allProductCollection = client.db('mss-mart').collection('allProduct')
-        const womanProductCollection = client.db('mss-mart').collection('womanCollection')
-        const manProductCollection = client.db('mss-mart').collection('manCollection')
-        const kidsProductCollection = client.db('mss-mart').collection('kidCollection')
-        const recommendationProduct = client.db('mss-mart').collection('recommendationCollection')
         const bestSealProductsCollection = client.db('mss-mart').collection('bestSealCollection')
+        const addToCartCollection = client.db('mss-mart').collection('AddToCart')
+        const userInfoCollection = client.db('mss-mart').collection('userInformation')
+        const loveCollection = client.db('mss-mart').collection('loveProduct')
 
 
-
-
-        app.get('/allProduct', async(req,res)=>{
-            const productType=req.query.productType
-            const query = {productType: productType}
-
+        app.get('/allProduct', async (req, res) => {
+            const productType = req.query.productType
+            const query = { productType: productType }
             const allProduct = await allProductCollection.find(query).toArray()
             res.send(allProduct)
         })
-
         app.get('/allProducts', async (req, res) => {
             const category = req.query.category;
             const query = { category: category }
@@ -49,15 +79,47 @@ const run = async () => {
             const findProduct = await allProductCollection.findOne(query)
             res.send(findProduct)
         })
-        app.get('/recommendation', async (req, res) => {
-            const query = {}
-            const recommendation = await recommendationProduct.find(query).limit(15).toArray()
-            res.send(recommendation)
-        })
+
         app.get('/bestSeal', async (req, res) => {
             const query = {}
             const BestSeal = await bestSealProductsCollection.find(query).toArray()
             res.send(BestSeal)
+        })
+
+        app.post('/addToCart', async (req, res) => {
+            const productDetails = req.body;
+            const addToCart = await addToCartCollection.insertOne(productDetails)
+            res.send(addToCart)
+        })
+
+        app.post('/userInfo', async (req, res) => {
+            const userInformation = req.body;
+            const information = await userInfoCollection.insertOne(userInformation)
+            res.send(information)
+        })
+
+        app.post('/loveProduct', async (req, res) => {
+            const Product = req.body;
+            const loveProduct = await loveCollection.insertOne(Product)
+            res.send(loveProduct)
+        })
+
+        // app.post('/jwt', async(req,res)=>{
+        //     const user = req.body;
+        //     const token = jwt.sign(user,process.env.JwtToken);
+        //     res.send(token);
+        // })
+
+    
+        app.get('/jwt', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const user = await userInfoCollection.findOne(query)
+            if (user ) {
+                const token = jwt.sign({ email }, process.env.JWT_TOKEN)
+                return res.send({ token })
+            }
+            res.status(403).send({ message: 'Forbidden Access' })
         })
 
     }
