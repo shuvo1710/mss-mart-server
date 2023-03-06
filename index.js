@@ -109,6 +109,13 @@ const run = async () => {
             res.send(loveProduct)
         })
 
+        app.get('/loveProduct', async(req,res)=>{
+            const email = req.query.email;
+            const query = {email: email}
+            const getLove = await loveCollection.find(query).toArray()
+            res.send(getLove)
+        })
+
         app.get('/user', async(req,res)=>{
             const email = req.query.email;
             const query = {email:email}
