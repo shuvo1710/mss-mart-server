@@ -50,7 +50,6 @@ function verifyJWT(req, res, next) {
     })
 }
 
-
 const run = async () => {
 
     try {
@@ -59,7 +58,6 @@ const run = async () => {
         const addToCartCollection = client.db('mss-mart').collection('AddToCart')
         const userInfoCollection = client.db('mss-mart').collection('userInformation')
         const loveCollection = client.db('mss-mart').collection('loveProduct')
-
 
         app.get('/allProduct', async (req, res) => {
             const productType = req.query.productType
@@ -92,6 +90,13 @@ const run = async () => {
             res.send(addToCart)
         })
 
+        app.get('/addGetCart', async(req,res)=>{
+            const email = req.query.email;
+            const query = {email:email}
+            const getCart = await addToCartCollection.find(query).toArray()
+            res.send(getCart)
+        })
+
         app.post('/userInfo', async (req, res) => {
             const userInformation = req.body;
             const information = await userInfoCollection.insertOne(userInformation)
@@ -104,13 +109,14 @@ const run = async () => {
             res.send(loveProduct)
         })
 
-        // app.post('/jwt', async(req,res)=>{
-        //     const user = req.body;
-        //     const token = jwt.sign(user,process.env.JwtToken);
-        //     res.send(token);
-        // })
+        app.get('/user', async(req,res)=>{
+            const email = req.query.email;
+            const query = {email:email}
+            const userinfo = await userInfoCollection.findOne(query)
+            res.send(userinfo)
 
-    
+        })
+
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
             const query = { email: email }
