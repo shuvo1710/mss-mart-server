@@ -19,22 +19,6 @@ const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.PASSWORD}@clus
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 // console.log(uri);
 
-// function verifyJWT(req,res,next){
-//     const authHeader = req.headers.authorization;
-//     if(!authHeader){
-//         return res.status(401).send({message: 'access denied'})
-//     }
-//     const token = authHeader.split(' ')[1]
-
-//     jwt.verify(token,process.env.JwtToken,function(error,decoded){
-//         if(error){
-//             return res.status(401).send({message: 'access denied'})
-//         }
-//         req.decoded = decoded;
-//         next();
-//     })
-// }
-
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -59,18 +43,21 @@ const run = async () => {
         const userInfoCollection = client.db('mss-mart').collection('userInformation')
         const loveCollection = client.db('mss-mart').collection('loveProduct')
 
+        
         app.get('/allProduct', async (req, res) => {
             const productType = req.query.productType
             const query = { productType: productType }
             const allProduct = await allProductCollection.find(query).toArray()
             res.send(allProduct)
         })
+
         app.get('/allProducts', async (req, res) => {
             const category = req.query.category;
             const query = { category: category }
             const allProducts = await allProductCollection.find(query).toArray();
             res.send(allProducts)
         })
+
         app.get('/allProduct/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
@@ -114,6 +101,20 @@ const run = async () => {
             const query = {email: email}
             const getLove = await loveCollection.find(query).toArray()
             res.send(getLove)
+        })
+
+        app.delete('/loveProductDelete/:id', async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)}
+            const getLove = await loveCollection.deleteOne(query)
+            res.send(getLove)
+        })
+
+        app.get('/allUser', async(req,res)=>{
+            const email = req.query.email;
+            const query = {email:email}
+            const allUser= await userInfoCollection.findOne(query)
+            res.send({isAdmin:allUser?.role=== 'admin'})
         })
 
         app.get('/user', async(req,res)=>{
