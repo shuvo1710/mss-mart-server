@@ -65,6 +65,13 @@ const run = async () => {
             res.send(findProduct)
         })
 
+        app.delete('/allProduct/:id', async (req,res)=>{
+            const id = req.params.id;
+            const query = {_id :new ObjectId(id)}
+            const productDelete = await allProductCollection.deleteOne(query)
+            res.send(productDelete)
+        })
+
         app.get('/bestSeal', async (req, res) => {
             const query = {}
             const BestSeal = await bestSealProductsCollection.find(query).toArray()
@@ -84,11 +91,7 @@ const run = async () => {
             res.send(getCart)
         })
 
-        app.post('/userInfo', async (req, res) => {
-            const userInformation = req.body;
-            const information = await userInfoCollection.insertOne(userInformation)
-            res.send(information)
-        })
+      
 
         app.post('/loveProduct', async (req, res) => {
             const Product = req.body;
@@ -108,6 +111,12 @@ const run = async () => {
             const query = {_id: new ObjectId(id)}
             const getLove = await loveCollection.deleteOne(query)
             res.send(getLove)
+        })
+
+        app.post('/userInfo', async (req, res) => {
+            const userInformation = req.body;
+            const information = await userInfoCollection.insertOne(userInformation)
+            res.send(information)
         })
 
         app.get('/allUser', async(req,res)=>{
