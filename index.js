@@ -44,6 +44,12 @@ const run = async () => {
         const loveCollection = client.db('mss-mart').collection('loveProduct')
 
         
+        app.get('/allProducts', async(req,res)=>{
+            const query = {}
+            const allProducts = await allProductCollection.find(query).toArray()
+            res.send(allProducts)
+        })
+
         app.get('/allProduct', async (req, res) => {
             const productType = req.query.productType
             const query = { productType: productType }
@@ -124,6 +130,12 @@ const run = async () => {
             const query = {email:email}
             const allUser= await userInfoCollection.findOne(query)
             res.send({isAdmin:allUser?.role=== 'admin'})
+        })
+
+        app.get('/userInfo', async (req, res)=>{
+            const query={};
+            const user=await userInfoCollection.find(query).toArray()
+            res.send(user)
         })
 
         app.get('/user', async(req,res)=>{
