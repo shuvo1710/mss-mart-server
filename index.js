@@ -44,14 +44,14 @@ const run = async () => {
         const loveCollection = client.db('mss-mart').collection('loveProduct')
 
         
-        app.get('/allProducts', async(req,res)=>{
+        app.get('/products', async(req,res)=>{
             const query = {}
             const allProducts = await allProductCollection.find(query).toArray()
             res.send(allProducts)
         })
 
         app.get('/allProduct', async (req, res) => {
-            const productType = req.query.productType
+            const productType = req.query.productType;
             const query = { productType: productType }
             const allProduct = await allProductCollection.find(query).toArray()
             res.send(allProduct)
@@ -70,10 +70,17 @@ const run = async () => {
             const findProduct = await allProductCollection.findOne(query)
             res.send(findProduct)
         })
+        
+        // app.delete('/productsDelete/:id', async (req,res)=>{
+        //     const id = req.params.id;
+        //     const query = {_id: new ObjectId(id)}
+        //     const productDelete = await allProductCollection.deleteOne(query);
+        //     res.send(productDelete)
+        // })
 
-        app.delete('/allProduct/:id', async (req,res)=>{
+        app.delete('/productsDelete/:id', async(req,res)=>{
             const id = req.params.id;
-            const query = {_id :new ObjectId(id)}
+            const query = {_id: new ObjectId(id)}
             const productDelete = await allProductCollection.deleteOne(query)
             res.send(productDelete)
         })
