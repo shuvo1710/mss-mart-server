@@ -8,16 +8,12 @@ const jwt = require("jsonwebtoken")
 
 require("dotenv").config()
 
-
 app.use(cors())
 app.use(express.json())
 
 
-
-
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.PASSWORD}@cluster0.1mrcu36.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-// console.log(uri);
 
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
@@ -70,13 +66,6 @@ const run = async () => {
             const findProduct = await allProductCollection.findOne(query)
             res.send(findProduct)
         })
-        
-        // app.delete('/productsDelete/:id', async (req,res)=>{
-        //     const id = req.params.id;
-        //     const query = {_id: new ObjectId(id)}
-        //     const productDelete = await allProductCollection.deleteOne(query);
-        //     res.send(productDelete)
-        // })
 
         app.delete('/productsDelete/:id', async(req,res)=>{
             const id = req.params.id;
@@ -103,8 +92,6 @@ const run = async () => {
             const getCart = await addToCartCollection.find(query).toArray()
             res.send(getCart)
         })
-
-      
 
         app.post('/loveProduct', async (req, res) => {
             const Product = req.body;
